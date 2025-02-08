@@ -1,0 +1,6 @@
+# Ensure you have Python 3 installed.
+# Wndows' install comes with tkinter, Linux's doesn't.
+# For Debian/Ubuntu users: sudo apt install python3-tk
+# For Fedora users: sudo dnf install python3-devel
+
+tkcalendar==1.6.1
