@@ -130,20 +130,39 @@ def copy_text():
     text.event_generate("<<Copy>>")
 def paste_text():
     text.event_generate("<<Paste>>")
-# Find
-def find_text():
-    text.tag_remove('found','1.0',tk.END) # Clear
-    search_string = simpledialog.askstring("Find","Find:")
-    if search_string:
-        idx = '1.0'
+# Highlight
+def highlight_text():
+    text.tag_remove('highlight', '1.0', tk.END)  # Clear previous highlights
+    filter_word = simpledialog.askstring("Highlight", "Highlight:")
+    if filter_word:
+        idx = "1.0"
         while True:
-            idx = text.search(search_string,idx,nocase=1,stopindex=tk.END)
+            idx = text.search(filter_word, idx, nocase=1, stopindex=tk.END)
             if not idx:
                 break
-            end_idx = f"{idx}+{len(search_string)}c"
-            text.tag_add('found',idx,end_idx)
+            end_idx = f"{idx}+{len(filter_word)}c"
+            text.tag_add('highlight', idx, end_idx)
             idx = end_idx
-        text.tag_config('found', background='yellow', foreground='black')
+        text.tag_config('highlight', background='yellow', foreground='black')
+current_search_index = None  # Track the search position
+
+def find_text():
+    global current_search_index
+    search_string = simpledialog.askstring("Find", "Find:")
+    if not search_string:
+        return  # Exit if no input / no previous search
+    text.tag_remove('found', '1.0', tk.END)  # Clear previous highlights
+    idx = text.search(search_string, current_search_index, nocase=1, stopindex=tk.END)
+    if not idx:
+        messagebox.showinfo("Find", "No more occurrences found.")
+        return
+    end_idx = f"{idx}+{len(search_string)}c"
+    text.tag_add('found', idx, end_idx)
+    text.tag_config('found', background='yellow', foreground='black')
+    text.mark_set(tk.INSERT, idx)  # Move cursor
+    text.see(idx)  # Scroll to found position
+    current_search_index = end_idx  # Update position
+
 # Find and Replace
 def replace_text():
     find_string = simpledialog.askstring("Find", "Find:")
@@ -190,13 +209,14 @@ def create_window():
     edit_menu.add_separator()
     edit_menu.add_command(label="Find",command=find_text)
     edit_menu.add_command(label="Replace",command=replace_text)
+    edit_menu.add_command(label="Highlight", command=highlight_text)
     menubar.add_cascade(label="Edit",menu=edit_menu)
 
     # Create a reminder section
     edit_menu = Menu(menubar, tearoff=0)
     edit_menu.add_command(label="Hour Pass",command=toggle_hourpass)
     edit_menu.add_separator()
-    edit_menu.add_command(label="Task",command=lambda:subprocess.Popen(['python', str(BASE_DIR / 'OttoRemind.py')]))
+    edit_menu.add_command(label="Task",command=lambda:subprocess.Popen(['python', str(BASE_DIR / 'Chrotask.py')]))
     menubar.add_cascade(label="Remind",menu=edit_menu)
 
     # Configure the menu bar

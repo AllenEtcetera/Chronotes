@@ -38,7 +38,7 @@ def show_reminder(msg,keep_reminding):
     else:
         messagebox.showwarning("Do ASAP",msg)
 rootRemind = tk.Tk()
-rootRemind.title("Otto Reminder")
+rootRemind.title("Chrotask")
 task_label = tk.Label(rootRemind, text="To do:")
 task_entry = tk.Entry(rootRemind)
 
